@@ -1,4 +1,4 @@
-import {async, ComponentFixture, fakeAsync, flush, flushMicrotasks, TestBed, waitForAsync} from '@angular/core/testing';
+import {async, ComponentFixture, fakeAsync, flush, flushMicrotasks, TestBed, tick, waitForAsync} from '@angular/core/testing';
 import {CoursesModule} from '../courses.module';
 import {DebugElement} from '@angular/core';
 
@@ -80,7 +80,7 @@ describe('HomeComponent', () => {
   });
 
 
-  it("should display advanced courses when tab clicked", (done: DoneFn) => {
+  it("should display advanced courses when tab clicked", fakeAsync(() => {
 
     coursesService.findAllCourses.and.returnValue(of(setupCourses()));
 
@@ -92,13 +92,12 @@ describe('HomeComponent', () => {
 
     fixture.detectChanges();
 
-    setTimeout(()=>{
-      const cardTitles = el.queryAll(By.css('.mat-card-title'));
-      expect(cardTitles.length).toBeGreaterThan(0);
-      expect(cardTitles[0].nativeElement.textContent).toContain("Angular Security Course");
-      done();
-    }, 500);
-  });
+    flush();
+
+    const cardTitles = el.queryAll(By.css('.mat-tab-body-active .mat-card-title'));
+    expect(cardTitles.length).toBeGreaterThan(0);
+    expect(cardTitles[0].nativeElement.textContent).toContain("Angular Security Course");
+  }));
 
 });
 
